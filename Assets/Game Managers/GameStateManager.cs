@@ -19,6 +19,7 @@ namespace GameState
         public Sprite courtroom;
         public Sprite hallway;
         public Sprite courtroomSteps;
+        public Transform movementBounds;
 
         public List<GameObject> prosecutorsTeamPool;
         public List<GameObject> defendantsTeamPool;
@@ -77,6 +78,11 @@ namespace GameState
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 changeLevel();
+            }
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                Application.Quit();
+
             }
         }
 
@@ -178,6 +184,34 @@ namespace GameState
                 Lawyer defendingLawyerComponent = DefendingLawyer.GetComponent<Lawyer>();
                 defendingLawyerComponent.correspondingTeam = Lawyer.Team.Defendants;
                 defendantsTeamPool.Add(DefendingLawyer);
+            }
+
+            InitializeAI();
+        }
+
+        void InitializeAI()
+        {
+            foreach (GameObject prosecutor in prosecutorsTeamPool)
+            {
+                SetupAI(prosecutor);
+            }
+
+            foreach (GameObject defendant in defendantsTeamPool)
+            {
+                SetupAI(defendant);
+            }
+        }
+
+        void SetupAI(GameObject playerObject)
+        {
+            PlayerController playerController = playerObject.GetComponent<PlayerController>();
+            if (playerController != null)
+            {
+                playerController.SetupBounds(movementBounds); // Pass the bounds information to each player
+            }
+            else
+            {
+                Debug.LogError("PlayerController component not found on GameObject: " + playerObject.name);
             }
         }
 
