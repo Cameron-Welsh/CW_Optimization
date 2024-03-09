@@ -1,9 +1,15 @@
 fileFormatVersion: 2
-guid: 5c918bfb1848f8e45bb5214bbc5b6014
+guid: 0683141d857de264589ab15e6aee1698
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - lawyerPrefab: {fileID: 5270030767135678789, guid: 0ecea505bd0e60a419a9e2b1f2ef6e26, type: 3}
+  - screenSwipePrefab: {fileID: 6544960819589435704, guid: ed97c54c362d8944b8d347dbd7a0e2cb, type: 3}
+  - screenSwipeMaterial: {fileID: 2100000, guid: 1929473e04fa65d4096f0a116659bba6, type: 2}
+  - courtroom: {fileID: 21300000, guid: e9ce0c175c529df4b840edc8c08a3c63, type: 3}
+  - hallway: {fileID: 21300000, guid: e3c417e39b5a4694b9a41117f0b38c7e, type: 3}
+  - courtroomSteps: {fileID: 21300000, guid: 46e3e222fae568b42a8e598394db38e6, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

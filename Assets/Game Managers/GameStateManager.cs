@@ -15,6 +15,10 @@ namespace GameState
         public int reinforcementSize = 5;
         public bool leftVictory = false;
         public bool rightVictory = false;
+        public GameObject background;
+        public Sprite courtroom;
+        public Sprite hallway;
+        public Sprite courtroomSteps;
 
         public List<GameObject> prosecutorsTeamPool;
         public List<GameObject> defendantsTeamPool;
@@ -70,7 +74,7 @@ namespace GameState
 
         void Update()
         {
-            if (Input.GetKeyDown(KeyCode.W))
+            if (Input.GetKeyDown(KeyCode.Space))
             {
                 changeLevel();
             }
@@ -96,7 +100,7 @@ namespace GameState
             }
         }
 
-        IEnumerator ChangeBackgrounds()
+        IEnumerator ChangeBackgrounds() //LOOK HERE! I never disabled the screenSwipePrefab, which i totally should. Its always active with a complex shader on it. Not good!
         {
             float duration = 1.0f;
             float targetValue = 0f;
@@ -120,8 +124,27 @@ namespace GameState
             {
                 screenSwipeMaterial.SetFloat("_SwipeDirection", 0f);
             }
-            targetValue = 1f;
 
+            SpriteRenderer spriteRenderer = background.GetComponent<SpriteRenderer>();
+
+            switch (currentArena)
+            {
+                case Arena.Courtroom:
+                    spriteRenderer.sprite = courtroom;
+                    break;
+                case Arena.ProsecutorHall:
+                case Arena.DefendantsHall:
+                    spriteRenderer.sprite = hallway;
+                    spriteRenderer.sprite = hallway;
+                    break;
+                case Arena.ProsecutorsPodium:
+                case Arena.DefendantsPodium:
+                    spriteRenderer.sprite = courtroomSteps;
+                    spriteRenderer.sprite = courtroomSteps;
+                    break;
+            }
+
+            targetValue = 1f;
             startTime = Time.time;
             elapsedTime = 0f;
 
@@ -137,7 +160,7 @@ namespace GameState
                 yield return null;
             }
         }
-        void InitializeTeamPools()
+        void InitializeTeamPools() //I already object pooled but I can act like i didn't
         {
             prosecutorsTeamPool = new List<GameObject>();
             defendantsTeamPool = new List<GameObject>();
@@ -255,7 +278,7 @@ namespace GameState
             {
                 if (!ProsecutingLawyer.activeSelf && count < reinforcementSize)
                 {
-                    
+
                     ProsecutingLawyer.SetActive(true);
                     ProsecutingLawyer.transform.position = spawnLocations[Random.Range(0, spawnLocations.Length)];
                     count++;

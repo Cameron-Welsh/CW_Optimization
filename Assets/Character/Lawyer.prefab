@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7095347500684031574}
   - component: {fileID: 632374979506406004}
+  - component: {fileID: 3279714470959654250}
   m_Layer: 0
   m_Name: Lawyer
   m_TagString: Untagged
@@ -49,6 +50,19 @@ MonoBehaviour:
   health: 0
   maxHealth: 0
   hasItem: 0
+--- !u!114 &3279714470959654250
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5270030767135678789}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6a0f9bc0546cf742a39f5767e9b296b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 5
 --- !u!1 &5400446042544161471
 GameObject:
   m_ObjectHideFlags: 0
