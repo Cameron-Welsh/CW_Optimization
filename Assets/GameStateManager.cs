@@ -98,7 +98,7 @@ namespace GameState
 
         IEnumerator ChangeBackgrounds()
         {
-            float duration = 1.0f;  // Set the duration for the interpolation
+            float duration = 1.0f;
             float targetValue = 0f;
 
             float startTime = Time.time;
@@ -110,9 +110,6 @@ namespace GameState
                 {
                     float newProgress = Mathf.Lerp(1f, targetValue, elapsedTime / duration);
                     screenSwipeMaterial.SetFloat("_ScreenSwipePercent", newProgress);
-
-                    // Your code to use the interpolated float goes here
-                    Debug.Log("Interpolated Value: " + newProgress);
                 }
 
                 elapsedTime = Time.time - startTime;
@@ -134,15 +131,11 @@ namespace GameState
                 {
                     float newProgress = Mathf.Lerp(0f, targetValue, elapsedTime / duration);
                     screenSwipeMaterial.SetFloat("_ScreenSwipePercent", newProgress);
-
-                    // Your code to use the interpolated float goes here
-                    Debug.Log("Interpolated Value: " + newProgress);
                 }
 
                 elapsedTime = Time.time - startTime;
                 yield return null;
             }
-            // Additional code after the interpolation is complete
         }
         void InitializeTeamPools()
         {
