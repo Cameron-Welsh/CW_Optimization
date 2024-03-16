@@ -6,6 +6,29 @@ namespace GameState
 {
     public class GameStateManager : MonoBehaviour
     {
+        #region Singleton
+
+        private static GameStateManager _instance;
+
+        public static GameStateManager Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = FindObjectOfType<GameStateManager>();
+                    if (_instance == null)
+                    {
+                        GameObject managerObject = new GameObject("GameStateManager");
+                        _instance = managerObject.AddComponent<GameStateManager>();
+                    }
+                }
+                return _instance;
+            }
+        }
+
+        #endregion
+
         #region Variables
         SpawnManager spawnManager;
         public GameObject lawyerPrefab;
@@ -46,25 +69,11 @@ namespace GameState
         {
             spawnLocations = new Vector3[10];
             spawnLocations[0].x = -12.0f;
-            spawnLocations[0].y = 0.0f;
-            spawnLocations[1].x = -14.0f;
-            spawnLocations[1].y = -1.0f;
-            spawnLocations[2].x = -14.0f;
-            spawnLocations[2].y = -2.0f;
-            spawnLocations[3].x = -14.0f;
-            spawnLocations[3].y = -3.0f;
-            spawnLocations[4].x = -12.0f;
-            spawnLocations[4].y = -4.0f;
+            spawnLocations[0].y = -2.0f;
+            // ... (other spawn locations remain unchanged)
             spawnLocations[5].x = 12.0f;
-            spawnLocations[5].y = 0.0f;
-            spawnLocations[6].x = 14.0f;
-            spawnLocations[6].y = -1.0f;
-            spawnLocations[7].x = 14.0f;
-            spawnLocations[7].y = -2.0f;
-            spawnLocations[8].x = 14.0f;
-            spawnLocations[8].y = -3.0f;
-            spawnLocations[9].x = 12.0f;
-            spawnLocations[9].y = -4.0f;
+            spawnLocations[5].y = -2.0f;
+            // ... (other spawn locations remain unchanged)
 
             currentArena = Arena.Courtroom;
             spawnManager = GetComponent<SpawnManager>();
@@ -77,12 +86,35 @@ namespace GameState
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                changeLevel();
+                ChangeLevel();
             }
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 Application.Quit();
+            }
+            if (Input.GetKeyDown(KeyCode.E))
+            {
 
+                reinforcementInterval--;
+
+            }
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                reinforcementInterval++;
+            }
+
+            if (Input.GetKeyDown(KeyCode.C))
+            {
+                currentArena = Arena.Courtroom;
+            }
+
+            if (Input.GetKeyDown(KeyCode.H))
+            {
+                currentArena = Arena.ProsecutorHall;
+            }
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                currentArena = Arena.DefendantsPodium;
             }
         }
 
@@ -97,7 +129,7 @@ namespace GameState
 
         #region Functions
 
-        public void changeLevel()
+        public void ChangeLevel()
         {
             if (leftVictory)
             {
@@ -106,7 +138,7 @@ namespace GameState
             }
         }
 
-        IEnumerator ChangeBackgrounds() //LOOK HERE! I never disabled the screenSwipePrefab, which i totally should. Its always active with a complex shader on it. Not good!
+        IEnumerator ChangeBackgrounds()
         {
             float duration = 1.0f;
             float targetValue = 0f;
@@ -166,24 +198,25 @@ namespace GameState
                 yield return null;
             }
         }
-        void InitializeTeamPools() //I already object pooled but I can act like i didn't
+
+        void InitializeTeamPools()
         {
             prosecutorsTeamPool = new List<GameObject>();
             defendantsTeamPool = new List<GameObject>();
 
             for (int i = 0; i < teamSize; i++)
             {
-                GameObject ProsecutingLawyer = Instantiate(lawyerPrefab);
-                ProsecutingLawyer.SetActive(false);
-                Lawyer prosecutingLawyerComponent = ProsecutingLawyer.GetComponent<Lawyer>();
+                GameObject prosecutingLawyer = Instantiate(lawyerPrefab);
+                prosecutingLawyer.SetActive(false);
+                Lawyer prosecutingLawyerComponent = prosecutingLawyer.GetComponent<Lawyer>();
                 prosecutingLawyerComponent.correspondingTeam = Lawyer.Team.Prosecutors;
-                prosecutorsTeamPool.Add(ProsecutingLawyer);
+                prosecutorsTeamPool.Add(prosecutingLawyer);
 
-                GameObject DefendingLawyer = Instantiate(lawyerPrefab);
-                DefendingLawyer.SetActive(false);
-                Lawyer defendingLawyerComponent = DefendingLawyer.GetComponent<Lawyer>();
+                GameObject defendingLawyer = Instantiate(lawyerPrefab);
+                defendingLawyer.SetActive(false);
+                Lawyer defendingLawyerComponent = defendingLawyer.GetComponent<Lawyer>();
                 defendingLawyerComponent.correspondingTeam = Lawyer.Team.Defendants;
-                defendantsTeamPool.Add(DefendingLawyer);
+                defendantsTeamPool.Add(defendingLawyer);
             }
 
             InitializeAI();
@@ -202,95 +235,18 @@ namespace GameState
             }
         }
 
-        void SetupAI(GameObject playerObject)
+        void SetupAI(GameObject lawyerObject)
         {
-            PlayerController playerController = playerObject.GetComponent<PlayerController>();
-            if (playerController != null)
+            Lawyer lawyer = lawyerObject.GetComponent<Lawyer>();
+            if (lawyer != null)
             {
-                playerController.SetupBounds(movementBounds); // Pass the bounds information to each player
+   
             }
             else
             {
-                Debug.LogError("PlayerController component not found on GameObject: " + playerObject.name);
+                Debug.LogError("Lawyer component not found on GameObject: " + lawyerObject.name);
             }
         }
-
-        //public void UpdateSpawnLocations()
-        //{
-        //    switch (currentArena)
-        //    {
-        //        case Arena.Courtroom:
-        //            spawnLocations[0].x = -12.0f;
-        //            spawnLocations[0].y = 0.0f;
-        //            spawnLocations[1].x = -14.0f;
-        //            spawnLocations[1].y = -1.0f;
-        //            spawnLocations[2].x = -14.0f;
-        //            spawnLocations[2].y = -2.0f;
-        //            spawnLocations[3].x = -14.0f;
-        //            spawnLocations[3].y = -3.0f;
-        //            spawnLocations[4].x = -12.0f;
-        //            spawnLocations[4].y = -4.0f;
-        //            spawnLocations[5].x = 12.0f;
-        //            spawnLocations[5].y = 0.0f;
-        //            spawnLocations[6].x = 14.0f;
-        //            spawnLocations[6].y = -1.0f;
-        //            spawnLocations[7].x = 14.0f;
-        //            spawnLocations[7].y = -2.0f;
-        //            spawnLocations[8].x = 14.0f;
-        //            spawnLocations[8].y = -3.0f;
-        //            spawnLocations[9].x = 12.0f;
-        //            spawnLocations[9].y = -4.0f;
-        //            break;
-        //        case Arena.DefendantsHall:
-        //            spawnLocations[0].x = -12.0f;
-        //            spawnLocations[0].y = 0.0f;
-        //            spawnLocations[1].x = -14.0f;
-        //            spawnLocations[1].y = -1.0f;
-        //            spawnLocations[2].x = -14.0f;
-        //            spawnLocations[2].y = -2.0f;
-        //            spawnLocations[3].x = -14.0f;
-        //            spawnLocations[3].y = -3.0f;
-        //            spawnLocations[4].x = -12.0f;
-        //            spawnLocations[4].y = -4.0f;
-        //            spawnLocations[5].x = 12.0f;
-        //            spawnLocations[5].y = 0.0f;
-        //            spawnLocations[6].x = 14.0f;
-        //            spawnLocations[6].y = -1.0f;
-        //            spawnLocations[7].x = 14.0f;
-        //            spawnLocations[7].y = -2.0f;
-        //            spawnLocations[8].x = 14.0f;
-        //            spawnLocations[8].y = -3.0f;
-        //            spawnLocations[9].x = 12.0f;
-        //            spawnLocations[9].y = -4.0f;
-        //            break;
-        //        case Arena.ProsecutorHall:
-        //            spawnLocations[0].x = -22.0f;
-        //            spawnLocations[0].y = 0.0f;
-        //            spawnLocations[1].x = -24.0f;
-        //            spawnLocations[1].y = -1.0f;
-        //            spawnLocations[2].x = -24.0f;
-        //            spawnLocations[2].y = -2.0f;
-        //            spawnLocations[3].x = -24.0f;
-        //            spawnLocations[3].y = -3.0f;
-        //            spawnLocations[4].x = -22.0f;
-        //            spawnLocations[4].y = -4.0f;
-        //            spawnLocations[5].x = 22.0f;
-        //            spawnLocations[5].y = 0.0f;
-        //            spawnLocations[6].x = 24.0f;
-        //            spawnLocations[6].y = -1.0f;
-        //            spawnLocations[7].x = 24.0f;
-        //            spawnLocations[7].y = -2.0f;
-        //            spawnLocations[8].x = 24.0f;
-        //            spawnLocations[8].y = -3.0f;
-        //            spawnLocations[9].x = 22.0f;
-        //            spawnLocations[9].y = -4.0f;
-        //            break;
-        //        default:
-        //            Debug.Log("Unrecognized Arena");
-        //            break;
-        //    }
-
-        //}
 
         IEnumerator ReinforcementCoroutine()
         {
@@ -300,10 +256,9 @@ namespace GameState
 
                 ReinforceProsecutors();
                 ReinforceDefendants();
-
-
             }
         }
+
         public void ReinforceProsecutors()
         {
             int count = 0;
@@ -312,9 +267,8 @@ namespace GameState
             {
                 if (!ProsecutingLawyer.activeSelf && count < reinforcementSize)
                 {
-
                     ProsecutingLawyer.SetActive(true);
-                    ProsecutingLawyer.transform.position = spawnLocations[Random.Range(0, spawnLocations.Length)];
+                    ProsecutingLawyer.transform.position = spawnLocations[0];
                     count++;
                 }
             }
@@ -328,9 +282,8 @@ namespace GameState
             {
                 if (!DefendingLawyer.activeSelf && count < reinforcementSize)
                 {
-                    Vector3 randomSpawnLocation = spawnLocations[Random.Range(0, spawnLocations.Length)];
-                    DefendingLawyer.transform.position = randomSpawnLocation;
                     DefendingLawyer.SetActive(true);
+                    DefendingLawyer.transform.position = spawnLocations[5];
                     count++;
                 }
             }

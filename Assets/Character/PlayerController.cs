@@ -1,132 +1,150 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+//using System.Collections;
+//using System.Collections.Generic;
+//using UnityEngine;
 
-public class PlayerController : MonoBehaviour
-{
-    public float moveSpeed = 3f;
-    public Transform bounds; // Assign the GameObject with the collider defining the bounds
-    public Lawyer.Team team;
 
-    private GameObject[] enemies;
-    private bool isAttacking = false;
+//public class PlayerController : MonoBehaviour
+//{
+//    public float moveSpeed = 3f;
+//    public Transform bounds; // Assign the GameObject with the collider defining the bounds
+//    public Team team; // Updated variable name to match the enum in Lawyer script
 
-    void Start()
-    {
-        FindEnemies();
-    }
+//    private GameObject[] enemies;
+//    private bool isAttacking = false;
 
-    void Update()
-    {
-        if (isAttacking)
-        {
-            MoveTowardsEnemy();
-            // Add attack logic here
-        }
-        else
-        {
-            MoveRandomly();
-        }
-    }
+//    private SpriteRenderer spriteRenderer; // Reference to the SpriteRenderer component
 
-    public void SetupBounds(Transform boundsTransform)
-    {
-        bounds = boundsTransform;
-    }
+//    void Start()
+//    {
+//        spriteRenderer = GetComponent<SpriteRenderer>(); // Get the SpriteRenderer component
+//        FindEnemies();
+//    }
 
-    void FindEnemies()
-    {
-        GameObject[] allLawyers = GameObject.FindGameObjectsWithTag("Lawyer");
+//    void Update()
+//    {
+//        if (isAttacking)
+//        {
+//            MoveTowardsEnemy();
+//            // Add attack logic here
+//        }
+//        else
+//        {
+//            MoveRandomly();
+//        }
 
-        // Filter enemies based on team
-        List<GameObject> enemyList = new List<GameObject>();
+//        // Flip the sprite based on the movement direction
+//        if (transform.position.x < GetRandomPointInBounds().x)
+//        {
+//            spriteRenderer.flipX = false; // Face right
+//        }
+//        else
+//        {
+//            spriteRenderer.flipX = true; // Face left
+//        }
+//    }
 
-        foreach (GameObject lawyerObject in allLawyers)
-        {
-            Lawyer lawyer = lawyerObject.GetComponent<Lawyer>();
+//    public void SetupBounds(Transform boundsTransform)
+//    {
+//        bounds = boundsTransform;
+//    }
 
-            if (lawyer != null && lawyer.correspondingTeam != this.team)
-            {
-                enemyList.Add(lawyerObject);
-            }
-        }
+//    void FindEnemies()
+//    {
+//        GameObject[] allLawyers = GameObject.FindGameObjectsWithTag("Lawyer");
 
-        enemies = enemyList.ToArray();
-    }
+//        // Filter enemies based on team
+//        List<GameObject> enemyList = new List<GameObject>();
 
-    void MoveRandomly()
-    {
-        Vector3 randomDestination = GetRandomPointInBounds();
+//        foreach (GameObject lawyerObject in allLawyers)
+//        {
+//            Lawyer lawyer = lawyerObject.GetComponent<Lawyer>();
 
-        // Move towards the random destination
-        transform.position = Vector3.MoveTowards(transform.position, randomDestination, moveSpeed * Time.deltaTime);
+//            if (lawyer != null && lawyer.correspondingTeam != this.team)
+//            {
+//                enemyList.Add(lawyerObject);
+//            }
+//        }
 
-        // Check if reached the destination
-        if (Vector3.Distance(transform.position, randomDestination) < 0.1f)
-        {
-            // Switch to attacking mode after reaching the random destination
-            isAttacking = true;
-        }
-    }
+//        enemies = enemyList.ToArray();
+//    }
 
-    void MoveTowardsEnemy()
-    {
-        if (enemies.Length > 0)
-        {
-            // Find the closest enemy
-            GameObject closestEnemy = FindClosestEnemy();
+//    void MoveRandomly()
+//    {
+//        Vector3 randomDestination = GetRandomPointInBounds();
 
-            // Move towards the closest enemy
-            transform.position = Vector3.MoveTowards(transform.position, closestEnemy.transform.position, moveSpeed * Time.deltaTime);
+//        // Move towards the random destination
+//        transform.position = Vector3.MoveTowards(transform.position, randomDestination, moveSpeed * Time.deltaTime);
 
-            // Check if reached the enemy
-            if (Vector3.Distance(transform.position, closestEnemy.transform.position) < 0.1f)
-            {
-                // Switch back to moving randomly after reaching the enemy
-                isAttacking = false;
-            }
-        }
-        else
-        {
-            // No enemies, switch back to moving randomly
-            isAttacking = false;
-        }
-    }
+//        // Check if reached the destination
+//        if (Vector3.Distance(transform.position, randomDestination) < 0.1f)
+//        {
+//            // Switch to attacking mode after reaching the random destination
+//            isAttacking = true;
+//        }
+//    }
 
-    GameObject FindClosestEnemy()
-    {
-        float minDistance = float.MaxValue;
-        GameObject closestEnemy = null;
+//    void MoveTowardsEnemy()
+//    {
+//        if (enemies.Length > 0)
+//        {
+//            // Find the closest enemy
+//            GameObject closestEnemy = FindClosestEnemy();
 
-        foreach (GameObject enemy in enemies)
-        {
-            float distance = Vector3.Distance(transform.position, enemy.transform.position);
-            if (distance < minDistance)
-            {
-                minDistance = distance;
-                closestEnemy = enemy;
-            }
-        }
+//            // Move towards the closest enemy
+//            transform.position = Vector3.MoveTowards(transform.position, closestEnemy.transform.position, moveSpeed * Time.deltaTime);
 
-        return closestEnemy;
-    }
+//            // Check if reached the enemy
+//            if (Vector3.Distance(transform.position, closestEnemy.transform.position) < 0.1f)
+//            {
+//                // Switch back to moving randomly after reaching the enemy
+//                isAttacking = false;
+//            }
+//        }
+//        else
+//        {
+//            // No enemies, switch back to moving randomly
+//            isAttacking = false;
+//        }
+//    }
 
-    Vector3 GetRandomPointInBounds()
-    {
-        if (bounds != null)
-        {
-            Vector2 boundsSize = bounds.GetComponent<Collider2D>().bounds.size;
-            float randomX = Random.Range(bounds.position.x - boundsSize.x / 2, bounds.position.x + boundsSize.x / 2);
-            float randomY = Random.Range(bounds.position.y - boundsSize.y / 2, bounds.position.y + boundsSize.y / 2);
-            return new Vector3(randomX, randomY, transform.position.z);
-        }
-        else
-        {
-            Debug.LogError("Bounds not assigned!");
-            return transform.position;
-        }
-    }
-}
+//    GameObject FindClosestEnemy()
+//    {
+//        float minDistance = float.MaxValue;
+//        GameObject closestEnemy = null;
+
+//        foreach (GameObject enemy in enemies)
+//        {
+//            float distance = Vector3.Distance(transform.position, enemy.transform.position);
+//            if (distance < minDistance)
+//            {
+//                minDistance = distance;
+//                closestEnemy = enemy;
+//            }
+//        }
+
+//        return closestEnemy;
+//    }
+
+//    Vector3 GetRandomPointInBounds()
+//    {
+//        if (bounds != null)
+//        {
+//            Vector2 boundsSize = bounds.GetComponent<Collider2D>().bounds.size;
+//            float randomX = Random.Range(bounds.position.x - boundsSize.x / 2, bounds.position.x + boundsSize.x / 2);
+//            float randomY = Random.Range(bounds.position.y - boundsSize.y / 2, bounds.position.y + boundsSize.y / 2);
+//            return new Vector3(randomX, randomY, transform.position.z);
+//        }
+//        else
+//        {
+//            Debug.LogError("Bounds not assigned!");
+//            return transform.position;
+//        }
+//    }
+//}
+
+
+
+
 
 //{
 //    #region Variables
